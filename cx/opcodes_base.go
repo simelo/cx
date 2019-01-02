@@ -2,7 +2,6 @@
 
 package base
 
-import ()
 
 // op codes
 const (

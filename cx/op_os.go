@@ -4,7 +4,7 @@ package base
 
 import (
 	"bytes"
-	//"fmt"
+	"fmt"
 	"github.com/skycoin/skycoin/src/cipher/encoder"
 	"io/ioutil"
 	"math"

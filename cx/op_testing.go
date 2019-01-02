@@ -3,7 +3,6 @@ package base
 import (
 	"fmt"
 	"os"
-	// "github.com/skycoin/skycoin/src/cipher/encoder"
 )
 
 var assertSuccess bool = true
