@@ -445,12 +445,12 @@ func init() {
 	AddConstCode(CONST_GLTEXT_TOP_TO_BOTTOM, "gltext.TopToBottom", TYPE_I32, FromI32(2))
 
 	// os
-	AddConstCode(CONST_OS_RUN_SUCCESS, "os.RUN_SUCCESS", TYPE_I32, FromI32(OS_RUN_SUCCESS))
-	AddConstCode(CONST_OS_RUN_EMPTY_CMD, "os.RUN_EMPTY_CMD", TYPE_I32, FromI32(OS_RUN_EMPTY_CMD))
-	AddConstCode(CONST_OS_RUN_PANIC, "os.RUN_PANIC", TYPE_I32, FromI32(OS_RUN_PANIC))
-	AddConstCode(CONST_OS_RUN_START_FAILED, "os.RUN_START_FAILED", TYPE_I32, FromI32(OS_RUN_START_FAILED))
-	AddConstCode(CONST_OS_RUN_WAIT_FAILED, "os.RUN_WAIT_FAILED", TYPE_I32, FromI32(OS_RUN_WAIT_FAILED))
-	AddConstCode(CONST_OS_RUN_TIMEOUT, "os.RUN_TIMEOUT", TYPE_I32, FromI32(OS_RUN_TIMEOUT))
+	AddConstCode(CONST_OS_RUN_SUCCESS, "os.RUN_SUCCESS", TYPE_I32, FromI32(OS_RUN_SUCCESS))                //nolint typecheck
+	AddConstCode(CONST_OS_RUN_EMPTY_CMD, "os.RUN_EMPTY_CMD", TYPE_I32, FromI32(OS_RUN_EMPTY_CMD))          //nolint typecheck
+	AddConstCode(CONST_OS_RUN_PANIC, "os.RUN_PANIC", TYPE_I32, FromI32(OS_RUN_PANIC))                      //nolint typecheck
+	AddConstCode(CONST_OS_RUN_START_FAILED, "os.RUN_START_FAILED", TYPE_I32, FromI32(OS_RUN_START_FAILED)) //nolint typecheck
+	AddConstCode(CONST_OS_RUN_WAIT_FAILED, "os.RUN_WAIT_FAILED", TYPE_I32, FromI32(OS_RUN_WAIT_FAILED))    //nolint typecheck
+	AddConstCode(CONST_OS_RUN_TIMEOUT, "os.RUN_TIMEOUT", TYPE_I32, FromI32(OS_RUN_TIMEOUT))                //nolint typecheck
 
 	// cx
 	AddConstCode(CONST_CX_SUCCESS, "cx.SUCCESS", TYPE_I32, FromI32(CX_SUCCESS))
