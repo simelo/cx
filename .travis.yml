@@ -30,6 +30,7 @@ install:
 
 # Build, test & run cx test
 script:
+  - make lint
   - make build
   - make test
 
