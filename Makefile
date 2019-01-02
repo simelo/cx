@@ -71,10 +71,11 @@ install-deps: configure $(INSTALL_DEPS)
 	go get github.com/go-gl/gltext
 	go get github.com/blynn/nex
 	go get github.com/cznic/goyacc
-	go get github.com/Jeffail/leaps/cmd/...
-	go get -t github.com/gotk3/gotk3/...
-	go get -t github.com/amir/raidman/...
 #	go get github.com/skycoin/cx/...
+
+format: ## Formats the code. Must have goimports installed (use make install-linters).
+	goimports -w -local github.com/skycoin/cx ./cx
+	goimports -w -local github.com/skycoin/cx ./cxgo
 
 install: install-deps build configure-workspace ## Install CX from sources. Build dependencies
 	echo 'NOTE:\tWe recommend you to test your CX installation by running "cx ${GOPATH}/src/github.com/skycoin/cx/tests"'
@@ -87,8 +88,9 @@ install-linters: ## Install linters
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
 lint: ## Run linters. Use make install-linters first.
-	vendorcheck ./...
-	golangci-lint run -c .golangci.yml ./...
+	# vendorcheck ./...
+	golangci-lint run -c .golangci.yml ./cx
+	golangci-lint run -c .golangci.yml ./cxgo
 	# The govet version in golangci-lint is out of date and has spurious warnings, run it separately
 	go vet -all ./...
 
@@ -98,6 +100,8 @@ test: build ## Run CX test suite.
 
 update-golden-files: build ## Update golden files used in CX test suite
 	ls -1 tests/ | grep '.cx$$' | xargs -I NAME cx -t -co tests/testdata/tokens/NAME.txt tests/NAME
+
+check: lint test ## Run tests and linters
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

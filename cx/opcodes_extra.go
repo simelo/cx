@@ -2,8 +2,6 @@
 
 package base
 
-
-
 const (
 	// gogl
 	OP_GL_INIT = iota + END_OF_BASE_OPS

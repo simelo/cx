@@ -2,6 +2,7 @@ package base
 
 import (
 	"fmt"
+
 	. "github.com/satori/go.uuid"
 )
 

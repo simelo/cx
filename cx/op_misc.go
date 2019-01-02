@@ -1,7 +1,6 @@
 package base
 
 import (
-	"fmt"
 	"github.com/skycoin/skycoin/src/cipher/encoder"
 )
 

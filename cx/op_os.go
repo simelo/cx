@@ -4,8 +4,6 @@ package base
 
 import (
 	"bytes"
-	"fmt"
-	"github.com/skycoin/skycoin/src/cipher/encoder"
 	"io/ioutil"
 	"math"
 	"os"
@@ -13,6 +11,8 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/skycoin/skycoin/src/cipher/encoder"
 )
 
 const (

@@ -2,7 +2,6 @@
 
 package base
 
-
 // op codes
 const (
 	// time

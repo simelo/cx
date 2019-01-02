@@ -3,10 +3,11 @@
 package base
 
 import (
-	"github.com/skycoin/skycoin/src/cipher/encoder"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/skycoin/skycoin/src/cipher/encoder"
 )
 
 const (
