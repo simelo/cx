@@ -10,11 +10,12 @@ import (
 	"github.com/skycoin/skycoin/src/cipher/encoder"
 )
 
+//Debug ...
 func Debug(args ...interface{}) {
 	fmt.Println(args...)
 }
 
-// It returns true if the operator receives undefined types as input parameters but also an operator that needs to mimic its input's type. For example, == should not return its input type, as it is always going to return a boolean
+//IsUndOp It returns true if the operator receives undefined types as input parameters but also an operator that needs to mimic its input's type. For example, == should not return its input type, as it is always going to return a boolean
 func IsUndOp(fn *CXFunction) bool {
 	res := false
 	switch fn.OpCode {
@@ -35,6 +36,7 @@ func IsUndOp(fn *CXFunction) bool {
 	return res
 }
 
+//ExprOpName ...
 func ExprOpName(expr *CXExpression) string {
 	if expr.Operator.IsNative {
 		return OpNames[expr.Operator.OpCode]
@@ -51,15 +53,16 @@ func stackValueHeader(fileName string, fileLine int) string {
 	return fmt.Sprintf("%s:%d", fileName, fileLine)
 }
 
-func (prgrm *CXProgram) PrintStack() {
+//PrintStack ...
+func (cxt *CXProgram) PrintStack() {
 	fmt.Println()
 	fmt.Println("===Callstack===")
 
 	// we're going backwards in the stack
-	fp := prgrm.StackPointer
+	fp := cxt.StackPointer
 
-	for c := prgrm.CallCounter; c >= 0; c-- {
-		op := prgrm.CallStack[c].Operator
+	for c := cxt.CallCounter; c >= 0; c-- {
+		op := cxt.CallStack[c].Operator
 		fp -= op.Size
 
 		var dupNames []string
@@ -136,7 +139,8 @@ func (prgrm *CXProgram) PrintStack() {
 	}
 }
 
-func (prgrm *CXProgram) PrintProgram() {
+//PrintProgram ...
+func (cxt *CXProgram) PrintProgram() {
 	fmt.Println("Program")
 
 	var currentFunction *CXFunction
@@ -146,16 +150,16 @@ func (prgrm *CXProgram) PrintProgram() {
 	_ = currentPackage
 
 	// saving current program state because PrintProgram uses SelectXXX
-	if pkg, err := prgrm.GetCurrentPackage(); err == nil {
+	if pkg, err := cxt.GetCurrentPackage(); err == nil {
 		currentPackage = pkg
 	}
 
-	if fn, err := prgrm.GetCurrentFunction(); err == nil {
+	if fn, err := cxt.GetCurrentFunction(); err == nil {
 		currentFunction = fn
 	}
 
 	i := 0
-	for _, mod := range prgrm.Packages {
+	for _, mod := range cxt.Packages {
 		if IsCorePackage(mod.Name) {
 			continue
 		}
@@ -290,7 +294,7 @@ func (prgrm *CXProgram) PrintProgram() {
 					var dat []byte
 
 					if arg.Offset > STACK_SIZE {
-						dat = prgrm.Memory[arg.Offset : arg.Offset+arg.Size]
+						dat = cxt.Memory[arg.Offset : arg.Offset+arg.Size]
 					} else {
 						name = arg.Name
 					}
@@ -485,16 +489,17 @@ func (prgrm *CXProgram) PrintProgram() {
 	}
 
 	if currentPackage != nil {
-		prgrm.SelectPackage(currentPackage.Name)
+		cxt.SelectPackage(currentPackage.Name)
 	}
 	if currentFunction != nil {
-		prgrm.SelectFunction(currentFunction.Name)
+		cxt.SelectFunction(currentFunction.Name)
 	}
 
-	prgrm.CurrentPackage = currentPackage
+	cxt.CurrentPackage = currentPackage
 	currentPackage.CurrentFunction = currentFunction
 }
 
+//CheckArithmeticOp ...
 func CheckArithmeticOp(expr *CXExpression) bool {
 	if expr.Operator.IsNative {
 		switch expr.Operator.OpCode {
@@ -508,6 +513,7 @@ func CheckArithmeticOp(expr *CXExpression) bool {
 	return false
 }
 
+//IsCorePackage ...
 func IsCorePackage(ident string) bool {
 	for _, core := range CorePackages {
 		if core == ident {
@@ -517,6 +523,7 @@ func IsCorePackage(ident string) bool {
 	return false
 }
 
+//IsTempVar ...
 func IsTempVar(name string) bool {
 	if len(name) >= len(LOCAL_PREFIX) && name[:len(LOCAL_PREFIX)] == LOCAL_PREFIX {
 		return true
@@ -524,6 +531,7 @@ func IsTempVar(name string) bool {
 	return false
 }
 
+//GetArgSize ...
 func GetArgSize(typ int) int {
 	switch typ {
 	case TYPE_BOOL, TYPE_BYTE:
@@ -569,6 +577,7 @@ func checkForEscapedChars(str string) []byte {
 	return res
 }
 
+//GetAssignmentElement ...
 func GetAssignmentElement(arg *CXArgument) *CXArgument {
 	if len(arg.Fields) > 0 {
 		return arg.Fields[len(arg.Fields)-1]
@@ -577,6 +586,7 @@ func GetAssignmentElement(arg *CXArgument) *CXArgument {
 	}
 }
 
+//WriteToSlice ...
 func WriteToSlice(off int, inp []byte) int {
 	var heapOffset int
 
@@ -679,16 +689,19 @@ func writeObj(obj []byte) int {
 	return heapOffset + OBJECT_HEADER_SIZE
 }
 
+//WriteObject ...
 func WriteObject(out1Offset int, obj []byte) {
 	off := encoder.SerializeAtomic(int32(writeObj(obj)))
 
 	WriteMemory(out1Offset, off)
 }
 
+//WriteObjectRetOff ...
 func WriteObjectRetOff(obj []byte) int {
 	return writeObj(obj)
 }
 
+//ErrorHeader ...
 func ErrorHeader(currentFile string, lineNo int) string {
 	return "error: " + currentFile + ":" + strconv.FormatInt(int64(lineNo), 10)
 }
@@ -702,17 +715,18 @@ func runtimeErrorInfo(r interface{}, printStack bool) {
 		PROGRAM.PrintStack()
 	}
 
-	if DBG_GOLANG_STACK_TRACE {
+	if DbgGolangStackTrace {
 		debug.PrintStack()
 	}
 
 	os.Exit(3)
 }
 
+//RuntimeError ...
 func RuntimeError() {
 	if r := recover(); r != nil {
 		switch r {
-		case STACK_OVERFLOW_ERROR:
+		case StackOverflowError:
 			call := PROGRAM.CallStack[PROGRAM.CallCounter]
 			if PROGRAM.CallCounter > 0 {
 				PROGRAM.CallCounter--
@@ -766,6 +780,7 @@ func getNonCollectionValue(fp int, arg, elt *CXArgument, typ string) string {
 	}
 }
 
+//GetPrintableValue ...
 func GetPrintableValue(fp int, arg *CXArgument) string {
 	var typ string
 	elt := GetAssignmentElement(arg)

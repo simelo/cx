@@ -1,5 +1,6 @@
 package base
 
+// AddType ...
 func (arg *CXArgument) AddType(typ string) *CXArgument {
 	// arg.Typ = typ
 	if typCode, found := TypeCodes[typ]; found {

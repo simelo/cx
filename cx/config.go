@@ -4,20 +4,30 @@ import (
 	"os"
 )
 
-const DBG_GOLANG_STACK_TRACE = true
+//DbgGolangStackTrace ...
+const DbgGolangStackTrace = true
 
-// global reference to our program
+//PROGRAM global reference to our program
 var PROGRAM *CXProgram
 
-var CXPATH string = os.Getenv("CXPATH") + "/"
-var BINPATH string = CXPATH + "bin/"
-var PKGPATH string = CXPATH + "pkg/"
-var SRCPATH string = CXPATH + "src/"
+//CXPATH ...
+var CXPATH = os.Getenv("CXPATH") + "/"
+
+//BINPATH ...
+var BINPATH = CXPATH + "bin/"
+
+//PKGPATH ...
+var PKGPATH = CXPATH + "pkg/"
+
+//SRCPATH ...
+var SRCPATH = CXPATH + "src/"
+
+//COREPATH ...
 var COREPATH string
 
-const STACK_OVERFLOW_ERROR = "stack overflow"
-const HEAP_EXHAUSTED_ERROR = "heap exhausted"
-const MAIN_FUNC = "main"
+const StackOverflowError = "stack overflow"
+const HeapExhaustedError = "heap exhausted"
+const MainFunc = "main"
 const SYS_INIT_FUNC = "*init"
 const MAIN_PKG = "main"
 const OS_PKG = "os"

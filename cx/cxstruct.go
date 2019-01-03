@@ -9,6 +9,7 @@ import (
 /* The CXStruct struct contains information about a CX struct.
  */
 
+//CXStruct ...
 type CXStruct struct {
 	Fields    []*CXArgument
 	Name      string
@@ -17,6 +18,7 @@ type CXStruct struct {
 	ElementID UUID
 }
 
+//MakeStruct ...
 func MakeStruct(name string) *CXStruct {
 	return &CXStruct{
 		ElementID: MakeElementID(),
@@ -27,6 +29,7 @@ func MakeStruct(name string) *CXStruct {
 // ----------------------------------------------------------------
 //                             Getters
 
+//GetFields ...
 func (strct *CXStruct) GetFields() ([]*CXArgument, error) {
 	if strct.Fields != nil {
 		return strct.Fields, nil
@@ -35,6 +38,7 @@ func (strct *CXStruct) GetFields() ([]*CXArgument, error) {
 	}
 }
 
+//GetField ...
 func (strct *CXStruct) GetField(name string) (*CXArgument, error) {
 	for _, fld := range strct.Fields {
 		if fld.Name == name {
@@ -47,6 +51,7 @@ func (strct *CXStruct) GetField(name string) (*CXArgument, error) {
 // ----------------------------------------------------------------
 //                     Member handling
 
+//AddField ...
 func (strct *CXStruct) AddField(fld *CXArgument) *CXStruct {
 	found := false
 	for _, fl := range strct.Fields {
@@ -62,6 +67,7 @@ func (strct *CXStruct) AddField(fld *CXArgument) *CXStruct {
 	return strct
 }
 
+//RemoveField ...
 func (strct *CXStruct) RemoveField(fldName string) {
 	if len(strct.Fields) > 0 {
 		lenFlds := len(strct.Fields)

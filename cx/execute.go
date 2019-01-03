@@ -17,12 +17,13 @@ import (
 // 	//prgrm.ProgramSteps = nil
 // }
 
-func (prgrm *CXProgram) UnRun(nCalls int) {
-	if nCalls >= 0 || prgrm.CallCounter < 0 {
+//UnRun ...
+func (cxt *CXProgram) UnRun(nCalls int) {
+	if nCalls >= 0 || cxt.CallCounter < 0 {
 		return
 	}
 
-	call := &prgrm.CallStack[prgrm.CallCounter]
+	call := &cxt.CallStack[cxt.CallCounter]
 
 	for c := nCalls; c < 0; c++ {
 		if call.Line >= c {
@@ -31,25 +32,26 @@ func (prgrm *CXProgram) UnRun(nCalls int) {
 			c -= c
 		} else {
 
-			if prgrm.CallCounter == 0 {
+			if cxt.CallCounter == 0 {
 				call.Line = 0
 				return
 			}
 			c += call.Line
 			call.Line = 0
-			prgrm.CallCounter--
-			call = &prgrm.CallStack[prgrm.CallCounter]
+			cxt.CallCounter--
+			call = &cxt.CallStack[cxt.CallCounter]
 		}
 	}
 }
 
-func (prgrm *CXProgram) ToCall() *CXExpression {
-	for c := prgrm.CallCounter - 1; c >= 0; c-- {
-		if prgrm.CallStack[c].Line+1 >= len(prgrm.CallStack[c].Operator.Expressions) {
+//ToCall ...
+func (cxt *CXProgram) ToCall() *CXExpression {
+	for c := cxt.CallCounter - 1; c >= 0; c-- {
+		if cxt.CallStack[c].Line+1 >= len(cxt.CallStack[c].Operator.Expressions) {
 			// then it'll also return from this function call; continue
 			continue
 		}
-		return prgrm.CallStack[c].Operator.Expressions[prgrm.CallStack[c].Line+1]
+		return cxt.CallStack[c].Operator.Expressions[cxt.CallStack[c].Line+1]
 		// prgrm.CallStack[c].Operator.Expressions[prgrm.CallStack[prgrm.CallCounter-1].Line + 1]
 	}
 	// error
@@ -57,16 +59,17 @@ func (prgrm *CXProgram) ToCall() *CXExpression {
 	// panic("")
 }
 
-func (prgrm *CXProgram) Run(untilEnd bool, nCalls *int, untilCall int) error {
+//Run ...
+func (cxt *CXProgram) Run(untilEnd bool, nCalls *int, untilCall int) error {
 	defer RuntimeError()
 	var err error
 
-	for !prgrm.Terminated && (untilEnd || *nCalls != 0) && prgrm.CallCounter > untilCall {
-		call := &prgrm.CallStack[prgrm.CallCounter]
+	for !cxt.Terminated && (untilEnd || *nCalls != 0) && cxt.CallCounter > untilCall {
+		call := &cxt.CallStack[cxt.CallCounter]
 
 		// checking if enough memory in stack
-		if prgrm.StackPointer > STACK_SIZE {
-			panic(STACK_OVERFLOW_ERROR)
+		if cxt.StackPointer > STACK_SIZE {
+			panic(StackOverflowError)
 		}
 
 		if !untilEnd {
@@ -74,18 +77,18 @@ func (prgrm *CXProgram) Run(untilEnd bool, nCalls *int, untilCall int) error {
 			var toCallName string
 			var toCall *CXExpression
 
-			if call.Line >= call.Operator.Length && prgrm.CallCounter == 0 {
-				prgrm.Terminated = true
-				prgrm.CallStack[0].Operator = nil
-				prgrm.CallCounter = 0
+			if call.Line >= call.Operator.Length && cxt.CallCounter == 0 {
+				cxt.Terminated = true
+				cxt.CallStack[0].Operator = nil
+				cxt.CallCounter = 0
 				fmt.Println("in:terminated")
 				return err
 			}
 
-			if call.Line >= call.Operator.Length && prgrm.CallCounter != 0 {
-				toCall = prgrm.ToCall()
+			if call.Line >= call.Operator.Length && cxt.CallCounter != 0 {
+				toCall = cxt.ToCall()
 				// toCall = prgrm.CallStack[prgrm.CallCounter-1].Operator.Expressions[prgrm.CallStack[prgrm.CallCounter-1].Line + 1]
-				inName = prgrm.CallStack[prgrm.CallCounter-1].Operator.Name
+				inName = cxt.CallStack[cxt.CallCounter-1].Operator.Name
 			} else {
 				toCall = call.Operator.Expressions[call.Line]
 				inName = call.Operator.Name
@@ -101,9 +104,9 @@ func (prgrm *CXProgram) Run(untilEnd bool, nCalls *int, untilCall int) error {
 					toCallName = toCall.Operator.Package.Name + "." + toCall.Operator.Name
 				} else {
 					// then it's the end of the program got from nested function calls
-					prgrm.Terminated = true
-					prgrm.CallStack[0].Operator = nil
-					prgrm.CallCounter = 0
+					cxt.Terminated = true
+					cxt.CallStack[0].Operator = nil
+					cxt.CallCounter = 0
 					fmt.Println("in:terminated")
 					return err
 				}
@@ -113,7 +116,7 @@ func (prgrm *CXProgram) Run(untilEnd bool, nCalls *int, untilCall int) error {
 			*nCalls--
 		}
 
-		err = call.ccall(prgrm)
+		err = call.ccall(cxt)
 		if err != nil {
 			return err
 		}
@@ -122,8 +125,9 @@ func (prgrm *CXProgram) Run(untilEnd bool, nCalls *int, untilCall int) error {
 	return nil
 }
 
-func (prgrm *CXProgram) RunCompiled(nCalls int, args []string) error {
-	PROGRAM = prgrm
+//RunCompiled ...
+func (cxt *CXProgram) RunCompiled(nCalls int, args []string) error {
+	PROGRAM = cxt
 	// prgrm.PrintProgram()
 	rand.Seed(time.Now().UTC().UnixNano())
 
@@ -132,50 +136,50 @@ func (prgrm *CXProgram) RunCompiled(nCalls int, args []string) error {
 		untilEnd = true
 	}
 
-	if mod, err := prgrm.SelectPackage(MAIN_PKG); err == nil {
+	if mod, err := cxt.SelectPackage(MAIN_PKG); err == nil {
 		// initializing program resources
 		// prgrm.Stacks = append(prgrm.Stacks, MakeStack(1024))
 
-		if prgrm.CallStack[0].Operator == nil {
+		if cxt.CallStack[0].Operator == nil {
 			// then the program is just starting and we need to run the SYS_INIT_FUNC
 			if fn, err := mod.SelectFunction(SYS_INIT_FUNC); err == nil {
 				// *init function
 				mainCall := MakeCall(fn)
-				prgrm.CallStack[0] = mainCall
-				prgrm.StackPointer = fn.Size
+				cxt.CallStack[0] = mainCall
+				cxt.StackPointer = fn.Size
 
 				var err error
 
-				for !prgrm.Terminated {
-					call := &prgrm.CallStack[prgrm.CallCounter]
-					err = call.ccall(prgrm)
+				for !cxt.Terminated {
+					call := &cxt.CallStack[cxt.CallCounter]
+					err = call.ccall(cxt)
 					if err != nil {
 						return err
 					}
 				}
 				// we reset call state
-				prgrm.Terminated = false
-				prgrm.CallCounter = 0
-				prgrm.CallStack[0].Operator = nil
+				cxt.Terminated = false
+				cxt.CallCounter = 0
+				cxt.CallStack[0].Operator = nil
 			} else {
 				return err
 			}
 		}
 
-		if fn, err := mod.SelectFunction(MAIN_FUNC); err == nil {
+		if fn, err := mod.SelectFunction(MainFunc); err == nil {
 			if len(fn.Expressions) < 1 {
 				return nil
 			}
 
-			if prgrm.CallStack[0].Operator == nil {
+			if cxt.CallStack[0].Operator == nil {
 				// main function
 				mainCall := MakeCall(fn)
-				mainCall.FramePointer = prgrm.StackPointer
+				mainCall.FramePointer = cxt.StackPointer
 				// initializing program resources
-				prgrm.CallStack[0] = mainCall
+				cxt.CallStack[0] = mainCall
 
 				// prgrm.Stacks = append(prgrm.Stacks, MakeStack(1024))
-				prgrm.StackPointer += fn.Size
+				cxt.StackPointer += fn.Size
 
 				// feeding os.Args
 				if osPkg, err := PROGRAM.SelectPackage(OS_PKG); err == nil {
@@ -191,48 +195,47 @@ func (prgrm *CXProgram) RunCompiled(nCalls int, args []string) error {
 						WriteMemory(GetFinalOffset(0, osGbl), FromI32(int32(argsOffset)))
 					}
 				}
-				prgrm.Terminated = false
+				cxt.Terminated = false
 			}
 
-			if err = prgrm.Run(untilEnd, &nCalls, -1); err != nil {
+			if err = cxt.Run(untilEnd, &nCalls, -1); err != nil {
 				return err
 			}
 
-			if prgrm.Terminated {
-				prgrm.Terminated = false
-				prgrm.CallCounter = 0
-				prgrm.CallStack[0].Operator = nil
+			if cxt.Terminated {
+				cxt.Terminated = false
+				cxt.CallCounter = 0
+				cxt.CallStack[0].Operator = nil
 			}
 
 			// debugging memory
-			if len(prgrm.Memory) < 2000 {
-				fmt.Println("prgrm.Memory", prgrm.Memory)
+			if len(cxt.Memory) < 2000 {
+				fmt.Println("prgrm.Memory", cxt.Memory)
 			}
 
 			return err
-		} else {
-			return err
 		}
-	} else {
 		return err
 	}
+
+	return nil
 }
 
-func (prgrm *CXProgram) ccallback(expr *CXExpression, functionName string, packageName string, inputs [][]byte) {
-	if fn, err := prgrm.GetFunction(functionName, packageName); err == nil {
-		line := prgrm.CallStack[prgrm.CallCounter].Line
-		previousCall := prgrm.CallCounter
-		prgrm.CallCounter++
-		newCall := &prgrm.CallStack[prgrm.CallCounter]
+func (cxt *CXProgram) ccallback(expr *CXExpression, functionName string, packageName string, inputs [][]byte) {
+	if fn, err := cxt.GetFunction(functionName, packageName); err == nil {
+		line := cxt.CallStack[cxt.CallCounter].Line
+		previousCall := cxt.CallCounter
+		cxt.CallCounter++
+		newCall := &cxt.CallStack[cxt.CallCounter]
 		newCall.Operator = fn
 		newCall.Line = 0
-		newCall.FramePointer = prgrm.StackPointer
-		prgrm.StackPointer += newCall.Operator.Size
+		newCall.FramePointer = cxt.StackPointer
+		cxt.StackPointer += newCall.Operator.Size
 		newFP := newCall.FramePointer
 
 		// wiping next mem frame (removing garbage)
 		for c := 0; c < expr.Operator.Size; c++ {
-			prgrm.Memory[newFP+c] = 0
+			cxt.Memory[newFP+c] = 0
 		}
 
 		for i, inp := range inputs {
@@ -240,12 +243,12 @@ func (prgrm *CXProgram) ccallback(expr *CXExpression, functionName string, packa
 		}
 
 		var nCalls = 0
-		if err := prgrm.Run(true, &nCalls, previousCall); err != nil {
+		if err := cxt.Run(true, &nCalls, previousCall); err != nil {
 			os.Exit(CX_INTERNAL_ERROR)
 		}
 
-		prgrm.CallCounter = previousCall
-		prgrm.CallStack[prgrm.CallCounter].Line = line
+		cxt.CallCounter = previousCall
+		cxt.CallStack[cxt.CallCounter].Line = line
 	}
 }
 
@@ -317,7 +320,7 @@ func (call *CXCall) ccall(prgrm *CXProgram) error {
 
 			// checking if enough memory in stack
 			if prgrm.StackPointer > STACK_SIZE {
-				panic(STACK_OVERFLOW_ERROR)
+				panic(StackOverflowError)
 			}
 
 			fp := call.FramePointer

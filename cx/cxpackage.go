@@ -35,6 +35,7 @@ func MakePackage(name string) *CXPackage {
 // ----------------------------------------------------------------
 //                             Getters
 
+//GetImport ...
 func (pkg *CXPackage) GetImport(impName string) (*CXPackage, error) {
 	for _, imp := range pkg.Imports {
 		if imp.Name == impName {
@@ -44,6 +45,7 @@ func (pkg *CXPackage) GetImport(impName string) (*CXPackage, error) {
 	return nil, fmt.Errorf("package '%s' not imported", impName)
 }
 
+//GetFunctions ...
 func (pkg *CXPackage) GetFunctions() ([]*CXFunction, error) {
 	// going from map to slice
 	if pkg.Functions != nil {
@@ -53,6 +55,7 @@ func (pkg *CXPackage) GetFunctions() ([]*CXFunction, error) {
 	}
 }
 
+//GetFunction ...
 func (pkg *CXPackage) GetFunction(fnName string) (*CXFunction, error) {
 	var found bool
 	for _, fn := range pkg.Functions {
@@ -75,6 +78,7 @@ func (pkg *CXPackage) GetFunction(fnName string) (*CXFunction, error) {
 	return nil, fmt.Errorf("function '%s' not found in package '%s' or its imports", fnName, pkg.Name)
 }
 
+//GetMethod ...
 func (pkg *CXPackage) GetMethod(fnName string, receiverType string) (*CXFunction, error) {
 	for _, fn := range pkg.Functions {
 		if fn.Name == fnName && len(fn.Inputs) > 0 && fn.Inputs[0].CustomType != nil && fn.Inputs[0].CustomType.Name == receiverType {
@@ -85,6 +89,7 @@ func (pkg *CXPackage) GetMethod(fnName string, receiverType string) (*CXFunction
 	return nil, fmt.Errorf("method '%s' not found in package '%s'", fnName, pkg.Name)
 }
 
+//GetStruct ...
 func (pkg *CXPackage) GetStruct(strctName string) (*CXStruct, error) {
 	var foundStrct *CXStruct
 	for _, strct := range pkg.Structs {
@@ -113,6 +118,7 @@ func (pkg *CXPackage) GetStruct(strctName string) (*CXStruct, error) {
 	}
 }
 
+//GetGlobal ...
 func (pkg *CXPackage) GetGlobal(defName string) (*CXArgument, error) {
 	var foundDef *CXArgument
 	for _, def := range pkg.Globals {
@@ -138,6 +144,7 @@ func (pkg *CXPackage) GetGlobal(defName string) (*CXArgument, error) {
 	}
 }
 
+//GetCurrentFunction ...
 func (pkg *CXPackage) GetCurrentFunction() (*CXFunction, error) {
 	if pkg.CurrentFunction != nil {
 		return pkg.CurrentFunction, nil
@@ -146,6 +153,7 @@ func (pkg *CXPackage) GetCurrentFunction() (*CXFunction, error) {
 	return nil, errors.New("current function is nil")
 }
 
+//GetCurrentStruct ...
 func (pkg *CXPackage) GetCurrentStruct() (*CXStruct, error) {
 	if pkg.CurrentStruct != nil {
 		return pkg.CurrentStruct, nil
@@ -157,6 +165,7 @@ func (pkg *CXPackage) GetCurrentStruct() (*CXStruct, error) {
 // ----------------------------------------------------------------
 //                     Member handling
 
+//AddImport
 func (pkg *CXPackage) AddImport(imp *CXPackage) *CXPackage {
 	found := false
 	for _, im := range pkg.Imports {
@@ -172,6 +181,7 @@ func (pkg *CXPackage) AddImport(imp *CXPackage) *CXPackage {
 	return pkg
 }
 
+//RemoveImport ...
 func (pkg *CXPackage) RemoveImport(impName string) {
 	lenImps := len(pkg.Imports)
 	for i, imp := range pkg.Imports {
@@ -186,6 +196,7 @@ func (pkg *CXPackage) RemoveImport(impName string) {
 	}
 }
 
+//AddFunction ...
 func (pkg *CXPackage) AddFunction(fn *CXFunction) *CXPackage {
 	fn.Package = pkg
 
@@ -211,6 +222,7 @@ func (pkg *CXPackage) AddFunction(fn *CXFunction) *CXPackage {
 	return pkg
 }
 
+//RemoveFunction ...
 func (pkg *CXPackage) RemoveFunction(fnName string) {
 	lenFns := len(pkg.Functions)
 	for i, fn := range pkg.Functions {
@@ -225,6 +237,7 @@ func (pkg *CXPackage) RemoveFunction(fnName string) {
 	}
 }
 
+//AddStruct ...
 func (pkg *CXPackage) AddStruct(strct *CXStruct) *CXPackage {
 	found := false
 	for i, s := range pkg.Structs {
@@ -244,6 +257,7 @@ func (pkg *CXPackage) AddStruct(strct *CXStruct) *CXPackage {
 	return pkg
 }
 
+//RemoveStruct ...
 func (pkg *CXPackage) RemoveStruct(strctName string) {
 	lenStrcts := len(pkg.Structs)
 	for i, strct := range pkg.Structs {
@@ -258,6 +272,7 @@ func (pkg *CXPackage) RemoveStruct(strctName string) {
 	}
 }
 
+//AddGlobal ...
 func (pkg *CXPackage) AddGlobal(def *CXArgument) *CXPackage {
 	// def.Program = pkg.Program
 	def.Package = pkg
@@ -275,6 +290,7 @@ func (pkg *CXPackage) AddGlobal(def *CXArgument) *CXPackage {
 	return pkg
 }
 
+//RemoveGlobal ...
 func (pkg *CXPackage) RemoveGlobal(defName string) {
 	lenGlobals := len(pkg.Globals)
 	for i, def := range pkg.Globals {
@@ -292,6 +308,7 @@ func (pkg *CXPackage) RemoveGlobal(defName string) {
 // ----------------------------------------------------------------
 //                             Selectors
 
+//SelectFunction ...
 func (pkg *CXPackage) SelectFunction(name string) (*CXFunction, error) {
 	// prgrmStep := &CXProgramStep{
 	// 	Action: func(cxt *CXProgram) {
@@ -318,6 +335,7 @@ func (pkg *CXPackage) SelectFunction(name string) (*CXFunction, error) {
 	return found, nil
 }
 
+//SelectStruct ...
 func (pkg *CXPackage) SelectStruct(name string) (*CXStruct, error) {
 	// prgrmStep := &CXProgramStep{
 	// 	Action: func(cxt *CXProgram) {
@@ -343,6 +361,7 @@ func (pkg *CXPackage) SelectStruct(name string) (*CXStruct, error) {
 	return found, nil
 }
 
+//SelectExpression ...
 func (pkg *CXPackage) SelectExpression(line int) (*CXExpression, error) {
 	// prgrmStep := &CXProgramStep{
 	// 	Action: func(cxt *CXProgram) {
