@@ -468,7 +468,7 @@ func opAppend(expr *CXExpression, fp int) {
 
 			var obj2 []byte
 			if inp2.Type == TYPE_STR || inp2.Type == TYPE_AFF {
-				var strOffset int32 = int32(GetStrOffset(fp, inp2))
+				var strOffset = int32(GetStrOffset(fp, inp2))
 				obj2 = encoder.SerializeAtomic(strOffset)
 			} else {
 				obj2 = ReadMemory(inp2Offset, inp2)
@@ -613,7 +613,7 @@ func opRead(expr *CXExpression, fp int) {
 	size := encoder.Serialize(int32(len(byts)))
 	heapOffset := AllocateSeq(len(byts) + OBJECT_HEADER_SIZE)
 
-	var header []byte = make([]byte, OBJECT_HEADER_SIZE)
+	var header = make([]byte, OBJECT_HEADER_SIZE)
 	for c := 5; c < OBJECT_HEADER_SIZE; c++ {
 		header[c] = size[c-5]
 	}

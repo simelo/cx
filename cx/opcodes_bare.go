@@ -1,11 +1,13 @@
 package base
 
+//CorePackages ...
 var CorePackages = []string{
 	// temporary solution until we can implement these packages in pure CX I guess
 	"gl", "glfw", "time", "http", "os", "explorer", "aff", "gltext", "cx",
 }
 
 // op codes
+// nolint golint
 const (
 	OP_IDENTITY = iota
 	OP_JMP
@@ -238,12 +240,15 @@ const (
 )
 
 // For the parser. These shouldn't be used in the runtime for performance reasons
-var OpNames map[int]string = map[int]string{}
-var OpCodes map[string]int = map[string]int{}
-var Natives map[int]*CXFunction = map[int]*CXFunction{}
-var execNativeBare func(*CXProgram)
-var execNative func(*CXProgram)
+var (
+	OpNames        = map[int]string{}
+	OpCodes        = map[string]int{}
+	Natives        = map[int]*CXFunction{}
+	execNativeBare func(*CXProgram)
+	execNative     func(*CXProgram)
+)
 
+//AddOpCode ...
 func AddOpCode(code int, name string, inputs []int, outputs []int) {
 	OpNames[code] = name
 	OpCodes[name] = code
@@ -483,9 +488,9 @@ func init() {
 			prgrm.PrintStack()
 
 		case OP_SERIALIZE:
-			op_serialize(expr, fp)
+			opSerialize(expr, fp)
 		case OP_DESERIALIZE:
-			op_deserialize(expr, fp)
+			opDeserialize(expr, fp)
 
 		case OP_UND_EQUAL:
 			opEqual(expr, fp)

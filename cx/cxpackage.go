@@ -4,12 +4,13 @@ import (
 	"errors"
 	"fmt"
 
-	. "github.com/satori/go.uuid"
+	. "github.com/satori/go.uuid" //nolint golint
 )
 
 /* The CXPackage struct contains information about a CX package.
  */
 
+//CXPackage ...
 type CXPackage struct {
 	Imports         []*CXPackage
 	Functions       []*CXFunction
@@ -21,6 +22,7 @@ type CXPackage struct {
 	ElementID       UUID
 }
 
+//MakePackage ...
 func MakePackage(name string) *CXPackage {
 	return &CXPackage{
 		ElementID: MakeElementID(),
@@ -50,9 +52,9 @@ func (pkg *CXPackage) GetFunctions() ([]*CXFunction, error) {
 	// going from map to slice
 	if pkg.Functions != nil {
 		return pkg.Functions, nil
-	} else {
-		return nil, fmt.Errorf("package '%s' has no functions", pkg.Name)
 	}
+	return nil, fmt.Errorf("package '%s' has no functions", pkg.Name)
+
 }
 
 //GetFunction ...
@@ -113,9 +115,9 @@ func (pkg *CXPackage) GetStruct(strctName string) (*CXStruct, error) {
 
 	if foundStrct != nil {
 		return foundStrct, nil
-	} else {
-		return nil, fmt.Errorf("struct '%s' not found in package '%s'", strctName, pkg.Name)
 	}
+	return nil, fmt.Errorf("struct '%s' not found in package '%s'", strctName, pkg.Name)
+
 }
 
 //GetGlobal ...
@@ -139,9 +141,9 @@ func (pkg *CXPackage) GetGlobal(defName string) (*CXArgument, error) {
 
 	if foundDef != nil {
 		return foundDef, nil
-	} else {
-		return nil, fmt.Errorf("global '%s' not found in package '%s'", defName, pkg.Name)
 	}
+	return nil, fmt.Errorf("global '%s' not found in package '%s'", defName, pkg.Name)
+
 }
 
 //GetCurrentFunction ...
@@ -165,7 +167,7 @@ func (pkg *CXPackage) GetCurrentStruct() (*CXStruct, error) {
 // ----------------------------------------------------------------
 //                     Member handling
 
-//AddImport
+//AddImport ...
 func (pkg *CXPackage) AddImport(imp *CXPackage) *CXPackage {
 	found := false
 	for _, im := range pkg.Imports {
@@ -374,7 +376,7 @@ func (pkg *CXPackage) SelectExpression(line int) (*CXExpression, error) {
 	fn, err := pkg.GetCurrentFunction()
 	if err == nil {
 		return fn.SelectExpression(line)
-	} else {
-		return nil, err
 	}
+	return nil, err
+
 }

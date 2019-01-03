@@ -7,6 +7,7 @@ import (
 
 var assertSuccess = true
 
+//AssertFailed ...
 func AssertFailed() bool {
 	return assertSuccess == false
 }

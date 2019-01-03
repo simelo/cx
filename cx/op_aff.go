@@ -713,9 +713,9 @@ func readArgAff(aff string, tgtFn *CXFunction) *CXArgument {
 
 	if argType == "Input" {
 		return affExpr.Inputs[argIdx]
-	} else {
-		return affExpr.Outputs[argIdx]
 	}
+	return affExpr.Outputs[argIdx]
+
 }
 
 func opAffInform(expr *CXExpression, fp int) {

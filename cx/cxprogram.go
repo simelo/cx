@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/satori/go.uuid"
+	. "github.com/satori/go.uuid" //nolint golint
 )
 
 /*
@@ -15,6 +15,7 @@ import (
  * declarations.
  */
 
+//CXProgram ...
 type CXProgram struct {
 	Packages       []*CXPackage
 	Memory         []byte
@@ -50,9 +51,9 @@ func MakeProgram() *CXProgram {
 func (cxt *CXProgram) GetCurrentPackage() (*CXPackage, error) {
 	if cxt.CurrentPackage != nil {
 		return cxt.CurrentPackage, nil
-	} else {
-		return nil, errors.New("current package is nil")
 	}
+	return nil, errors.New("current package is nil")
+
 }
 
 //GetCurrentStruct ...
@@ -60,12 +61,12 @@ func (cxt *CXProgram) GetCurrentStruct() (*CXStruct, error) {
 	if cxt.CurrentPackage != nil {
 		if cxt.CurrentPackage.CurrentStruct != nil {
 			return cxt.CurrentPackage.CurrentStruct, nil
-		} else {
-			return nil, errors.New("current struct is nil")
 		}
-	} else {
-		return nil, errors.New("current package is nil")
+		return nil, errors.New("current struct is nil")
+
 	}
+	return nil, errors.New("current package is nil")
+
 }
 
 //GetCurrentFunction  ...
@@ -73,12 +74,12 @@ func (cxt *CXProgram) GetCurrentFunction() (*CXFunction, error) {
 	if cxt.CurrentPackage != nil {
 		if cxt.CurrentPackage.CurrentFunction != nil {
 			return cxt.CurrentPackage.CurrentFunction, nil
-		} else {
-			return nil, errors.New("current function is nil")
 		}
-	} else {
-		return nil, errors.New("current package is nil")
+		return nil, errors.New("current function is nil")
+
 	}
+	return nil, errors.New("current package is nil")
+
 }
 
 //GetCurrentExpression ...
@@ -87,9 +88,9 @@ func (cxt *CXProgram) GetCurrentExpression() (*CXExpression, error) {
 		cxt.CurrentPackage.CurrentFunction != nil &&
 		cxt.CurrentPackage.CurrentFunction.CurrentExpression != nil {
 		return cxt.CurrentPackage.CurrentFunction.CurrentExpression, nil
-	} else {
-		return nil, errors.New("current package, function or expression is nil")
 	}
+	return nil, errors.New("current package, function or expression is nil")
+
 }
 
 //GetGlobal ...
@@ -118,9 +119,9 @@ func (cxt *CXProgram) GetGlobal(name string) (*CXArgument, error) {
 
 	if foundArgument == nil {
 		return nil, fmt.Errorf("global '%s' not found", name)
-	} else {
-		return foundArgument, nil
 	}
+	return foundArgument, nil
+
 }
 
 //GetPackage ...
@@ -135,12 +136,12 @@ func (cxt *CXProgram) GetPackage(modName string) (*CXPackage, error) {
 		}
 		if found != nil {
 			return found, nil
-		} else {
-			return nil, fmt.Errorf("package '%s' not found", modName)
 		}
-	} else {
 		return nil, fmt.Errorf("package '%s' not found", modName)
+
 	}
+	return nil, fmt.Errorf("package '%s' not found", modName)
+
 }
 
 //GetStruct ...
@@ -180,9 +181,9 @@ func (cxt *CXProgram) GetStruct(strctName string, modName string) (*CXStruct, er
 
 	if foundPkg != nil && foundStrct != nil {
 		return foundStrct, nil
-	} else {
-		return nil, fmt.Errorf("struct '%s' not found in package '%s'", strctName, modName)
 	}
+	return nil, fmt.Errorf("struct '%s' not found in package '%s'", strctName, modName)
+
 }
 
 //GetFunction ...
@@ -218,9 +219,9 @@ func (cxt *CXProgram) GetFunction(fnName string, pkgName string) (*CXFunction, e
 
 	if foundPkg != nil && foundFn != nil {
 		return foundFn, nil
-	} else {
-		return nil, fmt.Errorf("function '%s' not found in package '%s'", fnName, pkgName)
 	}
+	return nil, fmt.Errorf("function '%s' not found in package '%s'", fnName, pkgName)
+
 }
 
 // ----------------------------------------------------------------
@@ -297,9 +298,9 @@ func (cxt *CXProgram) SelectFunction(name string) (*CXFunction, error) {
 	mod, err := cxt.GetCurrentPackage()
 	if err == nil {
 		return mod.SelectFunction(name)
-	} else {
-		return nil, err
 	}
+	return nil, err
+
 }
 
 //SelectStruct ...
@@ -314,9 +315,9 @@ func (cxt *CXProgram) SelectStruct(name string) (*CXStruct, error) {
 	mod, err := cxt.GetCurrentPackage()
 	if err == nil {
 		return mod.SelectStruct(name)
-	} else {
-		return nil, err
 	}
+	return nil, err
+
 }
 
 //SelectExpression ...
@@ -331,7 +332,7 @@ func (cxt *CXProgram) SelectExpression(line int) (*CXExpression, error) {
 	mod, err := cxt.GetCurrentPackage()
 	if err == nil {
 		return mod.SelectExpression(line)
-	} else {
-		return nil, err
 	}
+	return nil, err
+
 }

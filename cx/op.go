@@ -13,7 +13,7 @@ func CalculateDereferences(arg *CXArgument, finalOffset *int, fp int, dbg bool) 
 		switch op {
 		case DEREF_ARRAY:
 			for i, idxArg := range arg.Indexes {
-				var subSize int = 1
+				var subSize = 1
 				for _, len := range arg.Lengths[i+1:] {
 					subSize *= len
 				}
@@ -249,9 +249,9 @@ func WriteMemory(offset int, byts []byte) {
 func FromBool(in bool) []byte {
 	if in {
 		return []byte{1}
-	} else {
-		return []byte{0}
 	}
+	return []byte{0}
+
 }
 
 //FromByte ...

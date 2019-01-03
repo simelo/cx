@@ -40,9 +40,9 @@ func IsUndOp(fn *CXFunction) bool {
 func ExprOpName(expr *CXExpression) string {
 	if expr.Operator.IsNative {
 		return OpNames[expr.Operator.OpCode]
-	} else {
-		return expr.Operator.Name
 	}
+	return expr.Operator.Name
+
 }
 
 // func limitString (str string) string {
@@ -547,7 +547,7 @@ func GetArgSize(typ int) int {
 
 func checkForEscapedChars(str string) []byte {
 	var res []byte
-	var lenStr int = len(str)
+	var lenStr = len(str)
 	for c := 0; c < len(str); c++ {
 		var nextCh byte
 		ch := str[c]
@@ -581,9 +581,9 @@ func checkForEscapedChars(str string) []byte {
 func GetAssignmentElement(arg *CXArgument) *CXArgument {
 	if len(arg.Fields) > 0 {
 		return arg.Fields[len(arg.Fields)-1]
-	} else {
-		return arg
 	}
+	return arg
+
 }
 
 //WriteToSlice ...
@@ -594,7 +594,7 @@ func WriteToSlice(off int, inp []byte) int {
 		// then it's a new slice
 		heapOffset = AllocateSeq(OBJECT_HEADER_SIZE + SLICE_HEADER_SIZE + len(inp))
 
-		var header []byte = make([]byte, OBJECT_HEADER_SIZE)
+		var header = make([]byte, OBJECT_HEADER_SIZE)
 
 		size := encoder.SerializeAtomic(int32(len(inp)) + SLICE_HEADER_SIZE)
 
@@ -612,61 +612,60 @@ func WriteToSlice(off int, inp []byte) int {
 
 		WriteMemory(heapOffset, finalObj)
 		return heapOffset
-	} else {
-		// then it already exists
-		sliceHeader := PROGRAM.Memory[off+OBJECT_HEADER_SIZE : off+OBJECT_HEADER_SIZE+SLICE_HEADER_SIZE]
-
-		var l int32
-		var c int32
-
-		encoder.DeserializeAtomic(sliceHeader[:4], &l)
-		encoder.DeserializeAtomic(sliceHeader[4:], &c)
-
-		if l >= c {
-			// then we need to increase cap and relocate slice
-			obj := PROGRAM.Memory[off+OBJECT_HEADER_SIZE+SLICE_HEADER_SIZE : int32(off)+OBJECT_HEADER_SIZE+SLICE_HEADER_SIZE+l*int32(len(inp))]
-
-			l++
-			c = c * 2
-
-			heapOffset = AllocateSeq(int(c)*len(inp) + OBJECT_HEADER_SIZE + SLICE_HEADER_SIZE)
-
-			size := encoder.SerializeAtomic(int32(int(c)*len(inp) + SLICE_HEADER_SIZE))
-
-			var header []byte = make([]byte, OBJECT_HEADER_SIZE)
-			for c := 5; c < OBJECT_HEADER_SIZE; c++ {
-				header[c] = size[c-5]
-			}
-
-			lB := encoder.SerializeAtomic(l)
-			cB := encoder.SerializeAtomic(c)
-
-			finalObj := append(header, lB...)
-			finalObj = append(finalObj, cB...)
-			finalObj = append(finalObj, obj...)
-			finalObj = append(finalObj, inp...)
-
-			WriteMemory(heapOffset, finalObj)
-
-			return heapOffset
-		} else {
-			// then we can simply write the element
-
-			// updating the length
-			newL := encoder.SerializeAtomic(l + int32(1))
-
-			for i, byt := range newL {
-				PROGRAM.Memory[int(off)+OBJECT_HEADER_SIZE+i] = byt
-			}
-
-			// write the obj
-			for i, byt := range inp {
-				PROGRAM.Memory[off+OBJECT_HEADER_SIZE+SLICE_HEADER_SIZE+int(l)*len(inp)+i] = byt
-			}
-
-			return off
-		}
 	}
+	// then it already exists
+	sliceHeader := PROGRAM.Memory[off+OBJECT_HEADER_SIZE : off+OBJECT_HEADER_SIZE+SLICE_HEADER_SIZE]
+
+	var l int32
+	var c int32
+
+	encoder.DeserializeAtomic(sliceHeader[:4], &l)
+	encoder.DeserializeAtomic(sliceHeader[4:], &c)
+
+	if l >= c {
+		// then we need to increase cap and relocate slice
+		obj := PROGRAM.Memory[off+OBJECT_HEADER_SIZE+SLICE_HEADER_SIZE : int32(off)+OBJECT_HEADER_SIZE+SLICE_HEADER_SIZE+l*int32(len(inp))]
+
+		l++
+		c = c * 2
+
+		heapOffset = AllocateSeq(int(c)*len(inp) + OBJECT_HEADER_SIZE + SLICE_HEADER_SIZE)
+
+		size := encoder.SerializeAtomic(int32(int(c)*len(inp) + SLICE_HEADER_SIZE))
+
+		var header = make([]byte, OBJECT_HEADER_SIZE)
+		for c := 5; c < OBJECT_HEADER_SIZE; c++ {
+			header[c] = size[c-5]
+		}
+
+		lB := encoder.SerializeAtomic(l)
+		cB := encoder.SerializeAtomic(c)
+
+		finalObj := append(header, lB...)
+		finalObj = append(finalObj, cB...)
+		finalObj = append(finalObj, obj...)
+		finalObj = append(finalObj, inp...)
+
+		WriteMemory(heapOffset, finalObj)
+
+		return heapOffset
+	}
+	// then we can simply write the element
+
+	// updating the length
+	newL := encoder.SerializeAtomic(l + int32(1))
+
+	for i, byt := range newL {
+		PROGRAM.Memory[int(off)+OBJECT_HEADER_SIZE+i] = byt
+	}
+
+	// write the obj
+	for i, byt := range inp {
+		PROGRAM.Memory[off+OBJECT_HEADER_SIZE+SLICE_HEADER_SIZE+int(l)*len(inp)+i] = byt
+	}
+
+	return off
+
 }
 
 // refactoring reuse in WriteObject and WriteObjectRetOff
@@ -676,7 +675,7 @@ func writeObj(obj []byte) int {
 	// heapOffset := AllocateSeq(size + OBJECT_HEADER_SIZE + SLICE_HEADER_SIZE)
 	heapOffset := AllocateSeq(size + OBJECT_HEADER_SIZE)
 
-	var finalObj []byte = make([]byte, OBJECT_HEADER_SIZE+size)
+	var finalObj = make([]byte, OBJECT_HEADER_SIZE+size)
 
 	for c := OBJECT_GC_HEADER_SIZE; c < OBJECT_HEADER_SIZE; c++ {
 		finalObj[c] = sizeB[c-OBJECT_GC_HEADER_SIZE]

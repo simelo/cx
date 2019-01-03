@@ -25,58 +25,61 @@ var SRCPATH = CXPATH + "src/"
 //COREPATH ...
 var COREPATH string
 
-const StackOverflowError = "stack overflow"
-const HeapExhaustedError = "heap exhausted"
-const MainFunc = "main"
-const SYS_INIT_FUNC = "*init"
-const MAIN_PKG = "main"
-const OS_PKG = "os"
-const OS_ARGS = "Args"
+// nolint golint
+const (
+	StackOverflowError = "stack overflow"
+	HeapExhaustedError = "heap exhausted"
+	MAIN_FUNC          = "main"
+	SYS_INIT_FUNC      = "*init"
+	MAIN_PKG           = "main"
+	OS_PKG             = "os"
+	OS_ARGS            = "Args"
 
-const NON_ASSIGN_PREFIX = "nonAssign"
-const LOCAL_PREFIX = "*lcl"
-const LABEL_PREFIX = "*lbl"
+	NON_ASSIGN_PREFIX = "nonAssign"
+	LOCAL_PREFIX      = "*lcl"
+	LABEL_PREFIX      = "*lbl"
 
-// const CORE_MODULE = "core"
-const ID_FN = "identity"
-const INIT_FN = "initDef"
+	// const CORE_MODULE = "core"
+	ID_FN   = "identity"
+	INIT_FN = "initDef"
 
-const I32_SIZE = 4
-const I64_SIZE = 8
-const STR_SIZE = 4
+	I32_SIZE = 4
+	I64_SIZE = 8
+	STR_SIZE = 4
 
-const MARK_SIZE = 1
-const OBJECT_HEADER_SIZE = 9
-const OBJECT_GC_HEADER_SIZE = 5
-const FORWARDING_ADDRESS_SIZE = 4
-const OBJECT_SIZE = 4
+	MARK_SIZE                = 1
+	OBJECT_HEADER_SIZE       = 9
+	OBJECT_GC_HEADER_SIZE    = 5
+	FORWARDING_ADDRESS_SIZE  = 4
+	OBJECT_SIZE              = 4
+	CALLSTACK_SIZE           = 1000
+	STACK_SIZE               = 1048576  // 1 Mb
+	INIT_HEAP_SIZE           = 2097152  // 2 Mb
+	MAX_HEAP_SIZE            = 67108864 // 64 Mb
+	MIN_HEAP_FREE_RATIO      = 40
+	MAX_HEAP_FREE_RATIO      = 70
+	NULL_ADDRESS             = STACK_SIZE
+	NULL_HEAP_ADDRESS_OFFSET = 4
+	NULL_HEAP_ADDRESS        = 0
+	STR_HEADER_SIZE          = 4
+	TYPE_POINTER_SIZE        = 4
+	SLICE_HEADER_SIZE        = 8
+	MAX_UINT32               = ^uint32(0)
+	MIN_UINT32               = 0
+	MAX_INT32                = int(MAX_UINT32 >> 1)
+	MIN_INT32                = -MAX_INT32 - 1
+)
 
-const CALLSTACK_SIZE = 1000
-const STACK_SIZE = 1048576     // 1 Mb
-const INIT_HEAP_SIZE = 2097152 // 2 Mb
-const MAX_HEAP_SIZE = 67108864 // 64 Mb
-const MIN_HEAP_FREE_RATIO = 40
-const MAX_HEAP_FREE_RATIO = 70
+// nolint golint
+var (
+	MEMORY_SIZE = STACK_SIZE + INIT_HEAP_SIZE + TYPE_POINTER_SIZE
+	BASIC_TYPES = []string{
+		"bool", "str", "byte", "i32", "i64", "f32", "f64",
+		"[]bool", "[]str", "[]byte", "[]i32", "[]i64", "[]f32", "[]f64",
+	}
+)
 
-const NULL_ADDRESS = STACK_SIZE
-const NULL_HEAP_ADDRESS_OFFSET = 4
-const NULL_HEAP_ADDRESS = 0
-const STR_HEADER_SIZE = 4
-const TYPE_POINTER_SIZE = 4
-const SLICE_HEADER_SIZE = 8
-
-var MEMORY_SIZE = STACK_SIZE + INIT_HEAP_SIZE + TYPE_POINTER_SIZE
-
-const MAX_UINT32 = ^uint32(0)
-const MIN_UINT32 = 0
-const MAX_INT32 = int(MAX_UINT32 >> 1)
-const MIN_INT32 = -MAX_INT32 - 1
-
-var BASIC_TYPES []string = []string{
-	"bool", "str", "byte", "i32", "i64", "f32", "f64",
-	"[]bool", "[]str", "[]byte", "[]i32", "[]i64", "[]f32", "[]f64",
-}
-
+// nolint golint
 const (
 	CX_SUCCESS = iota
 	CX_RUNTIME_ERROR
@@ -86,6 +89,7 @@ const (
 	CX_ASSERT
 )
 
+// nolint golint
 const (
 	DECL_POINTER = iota // 0
 	DECL_ARRAY          // 1
@@ -95,11 +99,13 @@ const (
 )
 
 // what to write
+// nolint golint
 const (
 	PASSBY_VALUE = iota
 	PASSBY_REFERENCE
 )
 
+// nolint golint
 const (
 	DEREF_ARRAY = iota
 	DEREF_FIELD
@@ -107,6 +113,7 @@ const (
 	DEREF_DEREF
 )
 
+// nolint golint
 const (
 	TYPE_UNDEFINED = iota
 	TYPE_AFF
@@ -131,8 +138,11 @@ const (
 	TYPE_IDENTIFIER
 )
 
+// TypeCounter ...
 var TypeCounter int
-var TypeCodes map[string]int = map[string]int{
+
+// TypeCodes ..
+var TypeCodes = map[string]int{
 	"ident": TYPE_IDENTIFIER,
 	"aff":   TYPE_AFF,
 	"bool":  TYPE_BOOL,
@@ -151,7 +161,8 @@ var TypeCodes map[string]int = map[string]int{
 	"und":   TYPE_UNDEFINED,
 }
 
-var TypeNames map[int]string = map[int]string{
+//TypeNames ...
+var TypeNames = map[int]string{
 	TYPE_IDENTIFIER: "ident",
 	TYPE_AFF:        "aff",
 	TYPE_BOOL:       "bool",
@@ -171,6 +182,7 @@ var TypeNames map[int]string = map[int]string{
 }
 
 // memory locations
+// nolint golint
 const (
 	MEM_STACK = iota
 	MEM_HEAP

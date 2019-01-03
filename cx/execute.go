@@ -166,7 +166,7 @@ func (cxt *CXProgram) RunCompiled(nCalls int, args []string) error {
 			}
 		}
 
-		if fn, err := mod.SelectFunction(MainFunc); err == nil {
+		if fn, err := mod.SelectFunction(MAIN_FUNC); err == nil {
 			if len(fn.Expressions) < 1 {
 				return nil
 			}

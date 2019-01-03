@@ -90,9 +90,6 @@ install-linters: ## Install linters
 lint: ## Run linters. Use make install-linters first.
 	# vendorcheck ./...
 	golangci-lint run -c .golangci.yml ./cx
-	golangci-lint run -c .golangci.yml ./cxgo
-	# The govet version in golangci-lint is out of date and has spurious warnings, run it separately
-	go vet -all ./...
 
 test: build ## Run CX test suite.
 	go test -race -tags full github.com/skycoin/cx/cxgo/

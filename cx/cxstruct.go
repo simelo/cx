@@ -3,7 +3,7 @@ package base
 import (
 	"fmt"
 
-	. "github.com/satori/go.uuid"
+	. "github.com/satori/go.uuid" //nolint golint
 )
 
 /* The CXStruct struct contains information about a CX struct.
@@ -33,9 +33,9 @@ func MakeStruct(name string) *CXStruct {
 func (strct *CXStruct) GetFields() ([]*CXArgument, error) {
 	if strct.Fields != nil {
 		return strct.Fields, nil
-	} else {
-		return nil, fmt.Errorf("structure '%s' has no fields", strct.Name)
 	}
+	return nil, fmt.Errorf("structure '%s' has no fields", strct.Name)
+
 }
 
 //GetField ...
